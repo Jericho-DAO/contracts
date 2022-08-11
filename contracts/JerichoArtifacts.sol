@@ -252,7 +252,7 @@ contract JerichoArtifacts is ERC1155, Pausable, ERC1155Burnable, ContextMixin, N
 
     // Update for collection-specific metadata.
     function contractURI() public pure returns (string memory) {
-        return "https://ipfs.io/ipfs/bafybeicyff3gyh6kd35d75eh3qsb3le3v5sillme35we5nd6t7cq3fregi/"; // Contract-level metadata for ParkPics
+        return "https://ipfs.io/ipfs/bafkreia66tetuisvtwfj3y74xv5675gmoetbha3suqio6knqjexpqnilvq";
     }
 
     function mintGatePass() public{
@@ -280,18 +280,22 @@ contract JerichoArtifacts is ERC1155, Pausable, ERC1155Burnable, ContextMixin, N
         _mint(msg.sender,HAMMER,1,"0x000");
     }
 
+    // Check if the sender has the Gate Pass
     function hasGatePass() public view returns (bool) {
         return balanceOf(msg.sender,GATE_PASS) > 0;
     }
 
+    // Check if the sender has the Anvil
     function hasAnvil() public view returns (bool) {
-        return balanceOf(msg.sender,GATE_PASS) > 0;
+        return balanceOf(msg.sender,ANVIL) > 0;
     }
 
+    // Check if the sender has the Necklace of Frenship
     function hasNecklaceOfFrenship() public view returns (bool) {
         return balanceOf(msg.sender,NECKLACE_OF_FRENSHIP) > 0;
     }
 
+    // Check if the sender has the Hammer
     function hasHammer() public view returns (bool) {
         return balanceOf(msg.sender,HAMMER) > 0;
     }
