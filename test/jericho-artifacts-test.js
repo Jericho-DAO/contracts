@@ -6,7 +6,7 @@ describe("Artifacts Test", function () {
     const accounts = await ethers.getSigners();
 
     const Artifacts = await ethers.getContractFactory("JerichoArtifacts");
-    const artifacts = await Artifacts.deploy("Jericho Artifacts", "JCH");
+    const artifacts = await Artifacts.deploy("Jericho Artifacts", "JCH", "0x4124dbd5f4612f15494e87d4351f1f7137f5283b");
 
     await artifacts.mintGatePass();
     const balance = await artifacts.balanceOf(accounts[0].address,1)
@@ -17,7 +17,7 @@ describe("Artifacts Test", function () {
     const accounts = await ethers.getSigners();
 
     const Artifacts = await ethers.getContractFactory("JerichoArtifacts");
-    const artifacts = await Artifacts.deploy("Jericho Artifacts", "JCH");
+    const artifacts = await Artifacts.deploy("Jericho Artifacts", "JCH", "0x4124dbd5f4612f15494e87d4351f1f7137f5283b");
 
     await artifacts.mintGatePass();
     await artifacts.mintAnvil();
@@ -29,7 +29,7 @@ describe("Artifacts Test", function () {
     const accounts = await ethers.getSigners();
 
     const Artifacts = await ethers.getContractFactory("JerichoArtifacts");
-    const artifacts = await Artifacts.deploy("Jericho Artifacts", "JCH");
+    const artifacts = await Artifacts.deploy("Jericho Artifacts", "JCH", "0x4124dbd5f4612f15494e87d4351f1f7137f5283b");
 
     await artifacts.mintGatePass();
     await artifacts.mintAnvil();
@@ -42,7 +42,7 @@ describe("Artifacts Test", function () {
     const accounts = await ethers.getSigners();
 
     const Artifacts = await ethers.getContractFactory("JerichoArtifacts");
-    const artifacts = await Artifacts.deploy("Jericho Artifacts", "JCH");
+    const artifacts = await Artifacts.deploy("Jericho Artifacts", "JCH", "0x4124dbd5f4612f15494e87d4351f1f7137f5283b");
 
     await artifacts.mintGatePass();
     await artifacts.mintAnvil();
@@ -54,7 +54,7 @@ describe("Artifacts Test", function () {
 
   it("Check that has functions work", async function () {
     const Artifacts = await ethers.getContractFactory("JerichoArtifacts");
-    const artifacts = await Artifacts.deploy("Jericho Artifacts", "JCH");
+    const artifacts = await Artifacts.deploy("Jericho Artifacts", "JCH", "0x4124dbd5f4612f15494e87d4351f1f7137f5283b");
 
     await artifacts.mintGatePass();
     const hasGatePass = await artifacts.hasGatePass()
