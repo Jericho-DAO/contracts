@@ -25,6 +25,6 @@ module.exports = {
     mumbai: {
       url: API_URL,
       accounts: [`0x${PRIVATE_KEY}`]
-    }
+    },
   }
 };

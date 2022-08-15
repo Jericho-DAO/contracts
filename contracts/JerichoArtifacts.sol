@@ -10,11 +10,17 @@ import "@openzeppelin/contracts/metatx/ERC2771Context.sol";
 import "./utils/BaseRelayRecipient.sol";
 import "./utils/AccessProtected.sol";
 
+struct NecklaceOfFrenshipOwnersData {
+    string fren;
+}
+
 contract JerichoArtifacts is ERC1155, Pausable, ERC1155Burnable, AccessProtected, BaseRelayRecipient {
     uint256 public constant GATE_PASS = 1;
-    uint256 public constant ANVIL = 2;
+    uint256 public constant HAMMER = 2;
     uint256 public constant NECKLACE_OF_FRENSHIP = 3;
-    uint256 public constant HAMMER = 4;
+    uint256 public constant ANVIL = 4;
+
+    mapping(address => mapping(uint256 => NecklaceOfFrenshipOwnersData[])) public necklacesOfFrenshipData;
 
     // Contract name
     string public name;
@@ -41,32 +47,33 @@ contract JerichoArtifacts is ERC1155, Pausable, ERC1155Burnable, AccessProtected
         return "https://ipfs.io/ipfs/bafkreia66tetuisvtwfj3y74xv5675gmoetbha3suqio6knqjexpqnilvq";
     }
 
-    function mintGatePass() public{
-        require(balanceOf(_msgSender(),GATE_PASS) == 0,"you already have a Gate Pass");
-        _mint(_msgSender(),GATE_PASS,1,"0x000");
-    }
+    function mintArtifact(uint256 artifact, address frenWallet) public{
+        if (artifact == 1) {
+            require(balanceOf(_msgSender(),GATE_PASS) == 0,"you already have a Gate Pass");
+            _mint(_msgSender(),GATE_PASS,1,"0x000");
+        }
+        else if (artifact == 2) {
+            require(balanceOf(_msgSender(),GATE_PASS) > 0,"you need to have a Gate Pass");
+            require(balanceOf(_msgSender(),HAMMER) == 0,"you already have a Hammer");
+            _mint(_msgSender(),HAMMER,1,"0x000");
+        }
+        else if (artifact == 3) {
+            require(balanceOf(_msgSender(),GATE_PASS) > 0,"you need to have a Gate Pass");
+            require(balanceOf(_msgSender(),HAMMER) > 0,"you need to have a Hammer");
 
-    // If you do not have any Gate Pass the contract will let you buy the Anvil
-    function mintHammer() public{
-        require(balanceOf(_msgSender(),GATE_PASS) > 0,"you need to have a Gate Pass");
-        require(balanceOf(_msgSender(),ANVIL) == 0,"you already have a Anvil");
-        _mint(_msgSender(),HAMMER,1,"0x000");
-    }
+            necklacesOfFrenshipData[_msgSender()][NECKLACE_OF_FRENSHIP].push(NecklaceOfFrenshipOwnersData({ fren: string(abi.encodePacked(frenWallet)) }));
+            necklacesOfFrenshipData[frenWallet][NECKLACE_OF_FRENSHIP].push(NecklaceOfFrenshipOwnersData({ fren: string(abi.encodePacked(_msgSender())) }));
 
-    // If you do not have any Gate Pass and an Anvil the contract will let you buy the Necklace of Frenship
-    function mintNecklaceOfFrenship() public{
-        require(balanceOf(_msgSender(),GATE_PASS) > 0,"you need to have a Gate Pass");
-        require(balanceOf(_msgSender(),HAMMER) > 0,"you need to have a Anvil");
-        _mint(_msgSender(),NECKLACE_OF_FRENSHIP,1,"0x000");
-    }
-
-    // If you do not have any Gate Pass, Anvil and Necklace of Frenship the contract will let you buy the Hammer
-    function mintAnvil() public{
-        require(balanceOf(_msgSender(),GATE_PASS) > 0,"you need to have a Gate Pass");
-        require(balanceOf(_msgSender(),HAMMER) > 0,"you need to have a Anvil");
-        require(balanceOf(_msgSender(),NECKLACE_OF_FRENSHIP) > 0,"you need to have a Necklace of Frenship");
-        require(balanceOf(_msgSender(),ANVIL) == 0,"you already have a Hammer");
-        _mint(_msgSender(),ANVIL,1,"0x000");
+            _mint(_msgSender(),NECKLACE_OF_FRENSHIP,1,"0x000");
+            _mint(frenWallet, NECKLACE_OF_FRENSHIP,1,"0x000");
+        }
+        else if (artifact == 4) {
+            require(balanceOf(_msgSender(),GATE_PASS) > 0,"you need to have a Gate Pass");
+            require(balanceOf(_msgSender(),HAMMER) > 0,"you need to have a Hammer");
+            require(balanceOf(_msgSender(),NECKLACE_OF_FRENSHIP) > 0,"you need to have a Necklace of Frenship");
+            require(balanceOf(_msgSender(),ANVIL) == 0,"you already have a Anvil");
+            _mint(_msgSender(),ANVIL,1,"0x000");
+        }
     }
 
     // Check if the sender has the Gate Pass
