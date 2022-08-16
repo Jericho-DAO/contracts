@@ -8,11 +8,11 @@ async function main() {
   console.log("Contract is deployed on:", contract.address);
 
   // let txn;
-  txn = await contract.mintArtifact(1, "0x0000000000000000000000000000000000000000");
+  txn = await contract.mintArtifact(1, "0xcb43C75051F93F95DEfF5F9A971b8D5109a4f25C");
   await txn.wait();
   // console.log("Minted NFT #1");
 
-  txn = await contract.mintArtifact(2, "0x0000000000000000000000000000000000000000");
+  txn = await contract.mintArtifact(2, "0xcb43C75051F93F95DEfF5F9A971b8D5109a4f25C");
   await txn.wait();
   // console.log("Minted NFT #2");
 
