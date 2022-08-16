@@ -83,41 +83,41 @@ contract CustomAttributes is ERC1155, ERC1155Burnable {
         return returnedJson;
     }
 
-    function mint(uint256 artifact, address frenWallet) public{
+    function mint(uint256 artifact, address msgSender, address frenWallet) public {
         if (artifact == 1) {
-            require(balanceOf(_msgSender(),GATE_PASS) == 0,"you already have a Gate Pass");
-            _mint(_msgSender(),GATE_PASS,1,"0x000");
+            require(balanceOf(msgSender,GATE_PASS) == 0,"you already have a Gate Pass");
+            _mint(msgSender,GATE_PASS,1,"0x000");
             _mint(frenWallet,GATE_PASS,1,"0x000");
         }
         else if (artifact == 2) {
-            require(balanceOf(_msgSender(),GATE_PASS) > 0,"you need to have a Gate Pass");
-            require(balanceOf(_msgSender(),HAMMER) == 0,"you already have a Hammer");
-            _mint(_msgSender(),HAMMER,1,"0x000");
+            require(balanceOf(msgSender,GATE_PASS) > 0,"you need to have a Gate Pass");
+            require(balanceOf(msgSender,HAMMER) == 0,"you already have a Hammer");
+            _mint(msgSender,HAMMER,1,"0x000");
             _mint(frenWallet,HAMMER,1,"0x000");
         }
         else if (artifact == 3) {
-            require(balanceOf(_msgSender(),GATE_PASS) > 0,"you need to have a Gate Pass");
-            require(balanceOf(_msgSender(),HAMMER) > 0,"you need to have a Hammer");
+            require(balanceOf(msgSender,GATE_PASS) > 0,"you need to have a Gate Pass");
+            require(balanceOf(msgSender,HAMMER) > 0,"you need to have a Hammer");
             require(balanceOf(frenWallet,GATE_PASS) > 0,"your fren has to have a Gate Pass");
             require(balanceOf(frenWallet,HAMMER) > 0,"your fren has to have a Hammer");
             uint256 newItemId = _tokenIds.current();
 
             setAttributes(newItemId, string(abi.encodePacked("Necklace of Frenship #" , Strings.toString(newItemId))), "The Necklace of frenship is a pretty common artifact in Jericho. Families and frens have been exchanging Necklaces of frenship for centuries as a prayer for eternal frenship. The two fren wallets are engraved in the Necklace of frenship. You can't fake connections in Jericho. A fren is a fren.", "https://ipfs.io/ipfs/bafkreibyhgtflzzfykz7tfnvbxoueajc4yet3mge4kpd5pzcy2k7iixva4");
 
-            setNecklaceFrenship(_msgSender(), frenWallet, newItemId);
-            setNecklaceFrenship(frenWallet, _msgSender(), newItemId);
+            setNecklaceFrenship(msgSender, frenWallet, newItemId);
+            setNecklaceFrenship(frenWallet, msgSender, newItemId);
 
             _tokenIds.increment();
 
-            _mint(_msgSender(),NECKLACE_OF_FRENSHIP,1,"0x000");
+            _mint(msgSender,NECKLACE_OF_FRENSHIP,1,"0x000");
             _mint(frenWallet, NECKLACE_OF_FRENSHIP,1,"0x000");
         }
         else if (artifact == 4) {
-            require(balanceOf(_msgSender(),GATE_PASS) > 0,"you need to have a Gate Pass");
-            require(balanceOf(_msgSender(),HAMMER) > 0,"you need to have a Hammer");
-            require(balanceOf(_msgSender(),NECKLACE_OF_FRENSHIP) > 0,"you need to have a Necklace of Frenship");
-            require(balanceOf(_msgSender(),ANVIL) == 0,"you already have a Anvil");
-            _mint(_msgSender(),ANVIL,1,"0x000");
+            require(balanceOf(msgSender,GATE_PASS) > 0,"you need to have a Gate Pass");
+            require(balanceOf(msgSender,HAMMER) > 0,"you need to have a Hammer");
+            require(balanceOf(msgSender,NECKLACE_OF_FRENSHIP) > 0,"you need to have a Necklace of Frenship");
+            require(balanceOf(msgSender,ANVIL) == 0,"you already have a Anvil");
+            _mint(msgSender,ANVIL,1,"0x000");
         }
     }
 }

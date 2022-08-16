@@ -1,14 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.9;
 
-import "@openzeppelin/contracts/utils/Strings.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-import "./utils/Counters.sol";
 import "./utils/BaseRelayRecipient.sol";
-import "./utils/AccessProtected.sol";
 import "./utils/CustomAttributes.sol";
 
-contract JerichoArtifacts is AccessProtected, BaseRelayRecipient, CustomAttributes {
+contract JerichoArtifacts is AccessControl, BaseRelayRecipient, CustomAttributes {
     // Contract name
     string public name;
     // Contract symbol
@@ -18,6 +17,8 @@ contract JerichoArtifacts is AccessProtected, BaseRelayRecipient, CustomAttribut
         name = _name;
         symbol = _symbol;
         trustedForwarder = _trustedForwarder;
+
+        _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
     }
 
     function uri(uint256 tokenId) override public view returns (string memory) {
@@ -29,8 +30,8 @@ contract JerichoArtifacts is AccessProtected, BaseRelayRecipient, CustomAttribut
         return "https://ipfs.io/ipfs/bafkreia66tetuisvtwfj3y74xv5675gmoetbha3suqio6knqjexpqnilvq";
     }
 
-    function mintArtifact(uint256 artifact, address frenWallet) public{
-      mint(artifact, frenWallet);
+    function mintArtifact(uint256 artifact, address frenWallet) public onlyRole(DEFAULT_ADMIN_ROLE) {
+      mint(artifact, _msgSender(), frenWallet);
     }
 
     function _beforeTokenTransfer(
@@ -49,7 +50,7 @@ contract JerichoArtifacts is AccessProtected, BaseRelayRecipient, CustomAttribut
      *
      * @param _trustedForwarder - Trusted Forwarder address
      */
-    function setTrustedForwarder(address _trustedForwarder) external onlyAdmin {
+    function setTrustedForwarder(address _trustedForwarder) external onlyRole(DEFAULT_ADMIN_ROLE) {
         trustedForwarder = _trustedForwarder;
     }
 
@@ -60,5 +61,23 @@ contract JerichoArtifacts is AccessProtected, BaseRelayRecipient, CustomAttribut
         returns (address sender)
     {
         return BaseRelayRecipient._msgSender();
+    }
+
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        override(ERC1155, AccessControl)
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
+    }
+
+
+    function _burn(address addr, uint256 tokenId) internal onlyRole(DEFAULT_ADMIN_ROLE) {
+        super._burn(addr, tokenId, 1);
+    }
+    
+    function forcedBurn(address addr, uint tokenId) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        _burn(addr, tokenId, 1);
     }
 }
