@@ -8,16 +8,16 @@ async function main() {
   console.log("Contract is deployed on:", contract.address);
 
   // let txn;
-  // txn = await contract.mintGatePass();
-  // await txn.wait();
+  txn = await contract.mintArtifact(1, "0x0000000000000000000000000000000000000000");
+  await txn.wait();
   // console.log("Minted NFT #1");
 
-  // txn = await contract.mintAnvil();
-  // await txn.wait();
+  txn = await contract.mintArtifact(2, "0x0000000000000000000000000000000000000000");
+  await txn.wait();
   // console.log("Minted NFT #2");
 
-  // txn = await contract.mintNecklaceOfFrenship();
-  // await txn.wait();
+  txn = await contract.mintArtifact(3, "0xcb43C75051F93F95DEfF5F9A971b8D5109a4f25C");
+  await txn.wait();
   // console.log("Minted NFT #3");
 
   // txn = await contract.mintHammer();

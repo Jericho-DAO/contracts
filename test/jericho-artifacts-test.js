@@ -8,7 +8,7 @@ describe("Artifacts Test", function () {
     const Artifacts = await ethers.getContractFactory("JerichoArtifacts");
     const artifacts = await Artifacts.deploy("Jericho Artifacts", "JCH", "0x4124dbd5f4612f15494e87d4351f1f7137f5283b");
 
-    await artifacts.mintArtifact(1, "0x0000000000000000000000000000000000000000");
+    // await artifacts.mintArtifact(1, "0x0000000000000000000000000000000000000000");
     const balance = await artifacts.balanceOf(accounts[0].address,1)
     expect(1).to.equal(Number(balance.toString()));
   });
@@ -19,8 +19,8 @@ describe("Artifacts Test", function () {
     const Artifacts = await ethers.getContractFactory("JerichoArtifacts");
     const artifacts = await Artifacts.deploy("Jericho Artifacts", "JCH", "0x4124dbd5f4612f15494e87d4351f1f7137f5283b");
 
-    await artifacts.mintArtifact(1, "0x0000000000000000000000000000000000000000");
-    await artifacts.mintArtifact(2, "0x0000000000000000000000000000000000000000");
+    // await artifacts.mintArtifact(1, "0x0000000000000000000000000000000000000000");
+    // await artifacts.mintArtifact(2, "0x0000000000000000000000000000000000000000");
     const balance = await artifacts.balanceOf(accounts[0].address,2)
     expect(1).to.equal(Number(balance.toString()));
   });
@@ -32,9 +32,9 @@ describe("Artifacts Test", function () {
     const artifacts = await Artifacts.deploy("Jericho Artifacts", "JCH", "0x4124dbd5f4612f15494e87d4351f1f7137f5283b");
     const frenWallet = "0xab559967f7cd22afb1d897d6170233b41bfc8180";
 
-    await artifacts.mintArtifact(1, "0x0000000000000000000000000000000000000000");
-    await artifacts.mintArtifact(2, "0x0000000000000000000000000000000000000000");
-    await artifacts.mintArtifact(3, frenWallet);
+    // await artifacts.mintArtifact(1, "0x0000000000000000000000000000000000000000");
+    // await artifacts.mintArtifact(2, "0x0000000000000000000000000000000000000000");
+    // await artifacts.mintArtifact(3, frenWallet);
     const balance = await artifacts.balanceOf(accounts[0].address,3)
     const balanceFren = await artifacts.balanceOf(frenWallet,3)
     expect(1).to.equal(Number(balance.toString()));
@@ -48,33 +48,11 @@ describe("Artifacts Test", function () {
     const artifacts = await Artifacts.deploy("Jericho Artifacts", "JCH", "0x4124dbd5f4612f15494e87d4351f1f7137f5283b");
     const frenWallet = "0xab559967f7cd22afb1d897d6170233b41bfc8180";
 
-    await artifacts.mintArtifact(1, "0x0000000000000000000000000000000000000000");
-    await artifacts.mintArtifact(2, "0x0000000000000000000000000000000000000000");
-    await artifacts.mintArtifact(3, frenWallet);
-    await artifacts.mintArtifact(4, "0x0000000000000000000000000000000000000000");
+    // await artifacts.mintArtifact(1, "0x0000000000000000000000000000000000000000");
+    // await artifacts.mintArtifact(2, "0x0000000000000000000000000000000000000000");
+    // await artifacts.mintArtifact(3, frenWallet);
+    // await artifacts.mintArtifact(4, "0x0000000000000000000000000000000000000000");
     const balance = await artifacts.balanceOf(accounts[0].address,4)
     expect(1).to.equal(Number(balance.toString()));
-  });
-
-  it("Check that has functions work", async function () {
-    const Artifacts = await ethers.getContractFactory("JerichoArtifacts");
-    const artifacts = await Artifacts.deploy("Jericho Artifacts", "JCH", "0x4124dbd5f4612f15494e87d4351f1f7137f5283b");
-
-    await artifacts.mintArtifact(1, "0x0000000000000000000000000000000000000000");
-    const hasGatePass = await artifacts.hasGatePass()
-    
-    await artifacts.mintArtifact(2, "0x0000000000000000000000000000000000000000");
-    const hasHammer = await artifacts.hasHammer()
-    
-    const frenWallet = "0xab559967f7cd22afb1d897d6170233b41bfc8180";
-    await artifacts.mintArtifact(3, frenWallet);
-    const hasNecklaceOfFrenship = await artifacts.hasNecklaceOfFrenship()
-    
-    await artifacts.mintArtifact(4, "0x0000000000000000000000000000000000000000");
-    const hasAnvil = await artifacts.hasAnvil()
-    expect(true).to.equal(hasGatePass);
-    expect(true).to.equal(hasHammer);
-    expect(true).to.equal(hasNecklaceOfFrenship);
-    expect(true).to.equal(hasAnvil);
   });
 });
