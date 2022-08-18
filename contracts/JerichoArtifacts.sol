@@ -21,8 +21,8 @@ contract JerichoArtifacts is AccessControl, BaseRelayRecipient, CustomAttributes
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
     }
 
-    function uri(uint256 tokenId) override public view returns (string memory) {
-        return string(abi.encodePacked('data:application/json;base64,', getSerializedAttributes(tokenId, _msgSender())));
+    function uri(uint256 tokenId) override(ERC1155) public view returns (string memory) {
+        return string(abi.encodePacked('data:application/json;base64,', getSerializedAttributes(tokenId)));
     }    
 
     // Update for collection-specific metadata.
@@ -30,8 +30,8 @@ contract JerichoArtifacts is AccessControl, BaseRelayRecipient, CustomAttributes
         return "https://ipfs.io/ipfs/bafkreia66tetuisvtwfj3y74xv5675gmoetbha3suqio6knqjexpqnilvq";
     }
 
-    function mintArtifact(uint256 artifact, address frenWallet) public onlyRole(DEFAULT_ADMIN_ROLE) {
-      mint(artifact, _msgSender(), frenWallet);
+    function mintArtifact(uint256 artifact, address to, address frenWallet) public onlyRole(DEFAULT_ADMIN_ROLE) {
+      mint(artifact, to, frenWallet);
     }
 
     function _beforeTokenTransfer(
