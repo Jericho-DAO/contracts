@@ -38,9 +38,10 @@ describe("Artifacts Test", function () {
     await artifacts.mintArtifact(1, frenWallet, accounts[0].address);
     await artifacts.mintArtifact(2, frenWallet, accounts[0].address);
 
-    await artifacts.mintArtifact(3, accounts[0].address, frenWallet);
-    const balance = await artifacts.balanceOf(accounts[0].address,50000)
-    const balanceFren = await artifacts.balanceOf(frenWallet,50000)
+    await artifacts.mintArtifact(0, accounts[0].address, frenWallet);
+
+    const balance = await artifacts.balanceOf(accounts[0].address,50000);
+    const balanceFren = await artifacts.balanceOf(frenWallet,50000);
     expect(1).to.equal(Number(balance.toString()));
     expect(1).to.equal(Number(balanceFren.toString()));
   });
@@ -58,9 +59,12 @@ describe("Artifacts Test", function () {
     await artifacts.mintArtifact(1, frenWallet, accounts[0].address);
     await artifacts.mintArtifact(2, frenWallet, accounts[0].address);
 
+    await artifacts.mintArtifact(0, accounts[0].address, frenWallet);
+    console.log("HERE")
     await artifacts.mintArtifact(3, accounts[0].address, frenWallet);
-    await artifacts.mintArtifact(4, accounts[0].address, frenWallet);
-    const balance = await artifacts.balanceOf(accounts[0].address,4)
+    const balance = await artifacts.balanceOf(accounts[0].address,3);
+    console.log(balance)
+ 
     expect(1).to.equal(Number(balance.toString()));
   });
 });
