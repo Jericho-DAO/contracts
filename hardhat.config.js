@@ -15,7 +15,7 @@ module.exports = {
       accounts: [`0x${PRIVATE_KEY}`],
     },
     polygon: {
-      url: PROD_API_URL,
+      url: "https://rpc-mainnet.maticvigil.com/",
       accounts: [`0x${PRIVATE_KEY}`],
     }
   },

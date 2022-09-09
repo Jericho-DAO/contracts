@@ -5,14 +5,14 @@ import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Burnable.sol";
 import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Pausable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
-import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "../libs/Base64.sol";
 import "../libs/Counters.sol";
 
 uint256 constant NUMBER_OF_NECKLACES = 50000;
 
-contract CustomAttributes is ERC1155, ERC1155Burnable, AccessControl {
+contract CustomAttributes is ERC1155, ERC1155Burnable, Ownable {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
@@ -20,9 +20,6 @@ contract CustomAttributes is ERC1155, ERC1155Burnable, AccessControl {
     uint256 public constant GATE_PASS = 1;
     uint256 public constant HAMMER = 2;
     uint256 public constant ANVIL = 3;
-
-    bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
-    bytes32 public constant BURNER_ROLE = keccak256("BURNER_ROLE");
 
     struct Attr {
         string name;
@@ -32,6 +29,19 @@ contract CustomAttributes is ERC1155, ERC1155Burnable, AccessControl {
 
     mapping(uint256 => Attr) private attributes;
     mapping(address => uint256[]) public necklacesOwners;
+    mapping(address => bool) public firstBelievers;
+    mapping(address => bool) public jerichoMembers;
+
+    error MissingGatePass();
+    error MissingHammer();
+    error MissingNecklace();
+
+    error AlreadyHasGatePass();
+    error AlreadyHasHammer();
+    error IsNotJerichoMember();
+    error AlreadyHasAnvil();
+
+    error JerichoArtifactsNonTransferable();
 
     constructor() ERC1155("") {
         // arbitrary make the counter starting at 50000
@@ -55,9 +65,6 @@ contract CustomAttributes is ERC1155, ERC1155Burnable, AccessControl {
             "When Vulka died, her giant body was petrified on top of Mount Hudur, Jericho's biggest mountain. Her legs got destroyed in the process & scrambled into fragments we call Hudur's Stone, a unique stone that unveils true intentions. It is now used to produce Hudur's Anvils: Jericho's ID. As soon as you get one, you'll be recognized as a true Builder, and get access to all the Discord channels and our wiki.",
             "https://ipfs.io/ipfs/bafybeihj35lzf6k7wap7j2vh7uaudurtvqr42potwhsrwagrzbyipsyvl4"
         );
-
-        _setupRole(PAUSER_ROLE, _msgSender());
-        _setupRole(BURNER_ROLE, _msgSender());
     }
 
     function setAttributes(
@@ -65,12 +72,36 @@ contract CustomAttributes is ERC1155, ERC1155Burnable, AccessControl {
         string memory name,
         string memory description,
         string memory image
-    ) public {
+    ) internal {
         attributes[tokenId] = Attr({
             name: name,
             description: description,
             image: image
         });
+    }
+
+    function setFirstBeliever(address believer) public onlyOwner {
+        firstBelievers[believer] = true;
+    }
+
+    function removeFirstBeliever(address addr) public onlyOwner {
+        delete firstBelievers[addr];
+    }
+
+    function isBeliever(address add) public view returns (bool) {
+        return firstBelievers[add];
+    }
+
+    function setJerichoMember(address member) public onlyOwner {
+        jerichoMembers[member] = true;
+    }
+
+    function removeJerichoMember(address addr) public onlyOwner {
+        delete jerichoMembers[addr];
+    }
+
+    function isJerichoMember(address add) public view returns (bool) {
+        return jerichoMembers[add];
     }
 
     function getAttributes(uint256 tokenId)
@@ -108,38 +139,19 @@ contract CustomAttributes is ERC1155, ERC1155Burnable, AccessControl {
         address frenWallet
     ) public {
         if (artifact == GATE_PASS) {
-            require(
-                balanceOf(msgSender, GATE_PASS) == 0,
-                "you already have a Gate Pass"
-            );
+            if (balanceOf(msgSender, GATE_PASS) > 0)
+                revert AlreadyHasGatePass();
             _mint(msgSender, GATE_PASS, 1, "0x000");
         } else if (artifact == HAMMER) {
-            require(
-                balanceOf(msgSender, GATE_PASS) > 0,
-                "you need to have a Gate Pass"
-            );
-            require(
-                balanceOf(msgSender, HAMMER) == 0,
-                "you already have a Hammer"
-            );
+            if (balanceOf(msgSender, GATE_PASS) == 0) revert MissingGatePass();
+            if (balanceOf(msgSender, HAMMER) > 0) revert AlreadyHasHammer();
             _mint(msgSender, HAMMER, 1, "0x000");
         } else if (artifact == NECKLACE_OF_FRENSHIP) {
-            require(
-                balanceOf(msgSender, GATE_PASS) > 0,
-                "you need to have a Gate Pass"
-            );
-            require(
-                balanceOf(msgSender, HAMMER) > 0,
-                "you need to have a Hammer"
-            );
-            require(
-                balanceOf(frenWallet, GATE_PASS) > 0,
-                "your fren has to have a Gate Pass"
-            );
-            require(
-                balanceOf(frenWallet, HAMMER) > 0,
-                "your fren has to have a Hammer"
-            );
+            if (balanceOf(msgSender, GATE_PASS) == 0) revert MissingGatePass();
+            if (balanceOf(msgSender, HAMMER) == 0) revert MissingHammer();
+            if (balanceOf(frenWallet, GATE_PASS) == 0) revert MissingGatePass();
+            if (balanceOf(frenWallet, HAMMER) == 0) revert MissingHammer();
+
             uint256 newItemId = _tokenIds.current();
 
             setAttributes(
@@ -169,24 +181,54 @@ contract CustomAttributes is ERC1155, ERC1155Burnable, AccessControl {
 
             _tokenIds.increment();
         } else if (artifact == ANVIL) {
-            require(
-                balanceOf(msgSender, GATE_PASS) > 0,
-                "you need to have a Gate Pass"
-            );
-            require(
-                balanceOf(msgSender, HAMMER) > 0,
-                "you need to have a Hammer"
-            );
-            require(
-                necklacesOwners[msgSender].length > 0,
-                "you need to have at least 1 Necklace of Frenship"
-            );
-            require(
-                balanceOf(msgSender, ANVIL) == 0,
-                "you already have a Anvil"
-            );
+            if (balanceOf(msgSender, GATE_PASS) == 0) revert MissingGatePass();
+            if (balanceOf(msgSender, HAMMER) == 0) revert MissingHammer();
+            if (isJerichoMember(msgSender) == false)
+                revert IsNotJerichoMember();
+            if (
+                necklacesOwners[msgSender].length == 0 &&
+                isBeliever(msgSender) == false
+            ) revert MissingNecklace();
+            if (balanceOf(msgSender, ANVIL) > 0) revert AlreadyHasAnvil();
+
             _mint(msgSender, ANVIL, 1, "0x000");
         }
+    }
+
+    function forcedBurn(
+        address addressToBurn,
+        uint256 tokenId,
+        uint256 value
+    ) public onlyOwner {
+        _burn(addressToBurn, tokenId, value);
+    }
+
+    function forcedBurnBatch(
+        address addressToBurn,
+        uint256[] memory tokenIds,
+        uint256[] memory values
+    ) public onlyOwner {
+        _burnBatch(addressToBurn, tokenIds, values);
+    }
+
+    function safeTransferFrom(
+        address,
+        address,
+        uint256,
+        uint256,
+        bytes memory
+    ) public pure override {
+        revert JerichoArtifactsNonTransferable();
+    }
+
+    function safeBatchTransferFrom(
+        address,
+        address,
+        uint256[] memory,
+        uint256[] memory,
+        bytes memory
+    ) public pure override {
+        revert JerichoArtifactsNonTransferable();
     }
 
     function _beforeTokenTransfer(
@@ -201,7 +243,7 @@ contract CustomAttributes is ERC1155, ERC1155Burnable, AccessControl {
     function supportsInterface(bytes4 interfaceId)
         public
         view
-        override(ERC1155, AccessControl)
+        override(ERC1155)
         returns (bool)
     {
         return super.supportsInterface(interfaceId);

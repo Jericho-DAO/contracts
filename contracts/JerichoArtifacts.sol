@@ -1,20 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.9;
 
-import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Pausable.sol";
-import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Burnable.sol";
-
 import "./utils/BaseRelayRecipient.sol";
 import "./utils/CustomAttributes.sol";
 
 contract JerichoArtifacts is BaseRelayRecipient, CustomAttributes {
     string public name;
     string public symbol;
-
-    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
-    bytes32 public constant URI_SETTER_ROLE = keccak256("URI_SETTER_ROLE");
 
     constructor(
         string memory _name,
@@ -24,10 +16,6 @@ contract JerichoArtifacts is BaseRelayRecipient, CustomAttributes {
         name = _name;
         symbol = _symbol;
         trustedForwarder = _trustedForwarder;
-
-        _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
-        _setupRole(URI_SETTER_ROLE, _msgSender());
-        _setupRole(MINTER_ROLE, _msgSender());
     }
 
     function uri(uint256 tokenId)
@@ -45,7 +33,7 @@ contract JerichoArtifacts is BaseRelayRecipient, CustomAttributes {
             );
     }
 
-    function setURI(string memory newuri) public onlyRole(URI_SETTER_ROLE) {
+    function setURI(string memory newuri) public onlyOwner {
         _setURI(newuri);
     }
 
@@ -58,7 +46,7 @@ contract JerichoArtifacts is BaseRelayRecipient, CustomAttributes {
         uint256 artifact,
         address to,
         address frenWallet
-    ) public onlyRole(MINTER_ROLE) {
+    ) public {
         mint(artifact, to, frenWallet);
     }
 
@@ -67,14 +55,11 @@ contract JerichoArtifacts is BaseRelayRecipient, CustomAttributes {
         string memory tokenName,
         string memory description,
         string memory image
-    ) public onlyRole(MINTER_ROLE) {
+    ) public onlyOwner {
         setAttributes(tokenId, tokenName, description, image);
     }
 
-    function setTrustedForwarder(address _trustedForwarder)
-        external
-        onlyRole(DEFAULT_ADMIN_ROLE)
-    {
+    function setTrustedForwarder(address _trustedForwarder) external onlyOwner {
         trustedForwarder = _trustedForwarder;
     }
 
