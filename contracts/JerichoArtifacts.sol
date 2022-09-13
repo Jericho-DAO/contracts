@@ -45,9 +45,11 @@ contract JerichoArtifacts is BaseRelayRecipient, CustomAttributes {
     function mintArtifact(
         uint256 artifact,
         address to,
-        address frenWallet
+        address frenWallet,
+        string memory usernameOwner,
+        string memory usernameFren
     ) public {
-        mint(artifact, to, frenWallet);
+        mint(artifact, to, frenWallet, usernameOwner, usernameFren);
     }
 
     function setCustomAttributes(

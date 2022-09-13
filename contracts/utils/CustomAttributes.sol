@@ -136,7 +136,9 @@ contract CustomAttributes is ERC1155, ERC1155Burnable, Ownable {
     function mint(
         uint256 artifact,
         address msgSender,
-        address frenWallet
+        address frenWallet,
+        string memory usernameOwner,
+        string memory usernameFren
     ) public {
         if (artifact == GATE_PASS) {
             if (balanceOf(msgSender, GATE_PASS) > 0)
@@ -153,13 +155,15 @@ contract CustomAttributes is ERC1155, ERC1155Burnable, Ownable {
             if (balanceOf(frenWallet, HAMMER) == 0) revert MissingHammer();
 
             uint256 newItemId = _tokenIds.current();
-
+            
             setAttributes(
                 newItemId,
                 string(
                     abi.encodePacked(
-                        "Necklace of Frenship #",
-                        Strings.toString(newItemId)
+                        "Necklace of Frenship: ",
+                        usernameOwner,
+                        " & ",
+                        usernameFren
                     )
                 ),
                 string(
